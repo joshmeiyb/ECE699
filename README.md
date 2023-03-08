@@ -3,8 +3,8 @@
 # How to run
 
 ## Make the file
-`make
+`make`
 
 ## Get the output
-`./output
+`./output`
 
