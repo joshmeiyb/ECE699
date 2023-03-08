@@ -1,0 +1,5 @@
+# ignore all output files
+*.o
+
+#ignore output file
+output
