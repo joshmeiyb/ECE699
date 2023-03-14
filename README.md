@@ -14,8 +14,9 @@ https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generati
 There are three different examples for you to choose:
 
 1. Very simple integer BP: `example_fc_int_bp_very_simple()`
-2. Fully connected (fc) mnist integer DFA: `example_fc_int_dfa_mnist()`
-3. Fully connected (fc) fashion mnist integer DFA: `example_fc_int_dfa_fashion_mnist()`
+2. Fully connected (fc) mnist integer BP: `example_fc_int_bp_mnist`
+3. Fully connected (fc) mnist integer DFA: `example_fc_int_dfa_mnist()`
+4. Fully connected (fc) fashion mnist integer DFA: `example_fc_int_dfa_fashion_mnist()`
 
 You can comment out the current function and call the new function in the `main.cpp` file
 
