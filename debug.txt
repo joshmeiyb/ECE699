@@ -1,0 +1,3 @@
+Error: output: pktnn_mat.cpp:566: pktnn::pktmat& pktnn::pktmat::matElemDivMat(pktnn::pktmat&, pktnn::pktmat&): Assertion `mat1.dimsEqual(mat2)' failed
+
+Cause: backward() --> computeDeltas() --> matElemDivMat()

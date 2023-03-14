@@ -42,19 +42,19 @@ int example_fc_int_bp_very_simple() {
 
 int example_fc_int_bp_mnist() {
     int numTrainSamples = 60000;
-    int numTestSamples = 10000;
+    //int numTestSamples = 10000;
 
-    pktmat mnistTrainLabels;
+    //pktmat mnistTrainLabels;
     pktmat mnistTrainImages;
-    pktmat mnistTestLabels;
-    pktmat mnistTestImages;
+    //pktmat mnistTestLabels;
+    //pktmat mnistTestImages;
 
-    pktloader::loadMnistLabels(mnistTrainLabels, numTrainSamples, true); // numTrainSamples x 1
+    //pktloader::loadMnistLabels(mnistTrainLabels, numTrainSamples, true); // numTrainSamples x 1
     pktloader::loadMnistImages(mnistTrainImages, numTrainSamples, true); // numTrainSamples x (28*28)
-    pktloader::loadMnistLabels(mnistTestLabels, numTestSamples, false); // numTestSamples x 1
-    pktloader::loadMnistImages(mnistTestImages, numTestSamples, false); // numTestSamples x (28*28)
+    //pktloader::loadMnistLabels(mnistTestLabels, numTestSamples, false); // numTestSamples x 1
+    //pktloader::loadMnistImages(mnistTestImages, numTestSamples, false); // numTestSamples x (28*28)
 
-    std::cout << "Loaded train images," << numTrainSamples << ",Loaded test images," << numTestSamples << "\n";
+    std::cout << "Loaded train images," << numTrainSamples /*<< ",Loaded test images," << numTestSamples */<< "\n";
 
     int numClasses = 10;
     int mnistRows = 28;
@@ -70,38 +70,38 @@ int example_fc_int_bp_mnist() {
     pktfc fc2(dim1, dim2);
     pktfc fcLast(dim2, numClasses);
     //Modified the fc layers to do BP training
-    fc1.useDfa(false).setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
-    fc2.useDfa(false).setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
+    fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
+    fc2.useDfa(false).initHeWeightBias().setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
     fcLast.useDfa(false).setActv(b).setPrevLayer(fc2);
 
     // initialization
     pktmat trainTargetMat(numTrainSamples, numClasses);
-    pktmat testTargetMat(numTestSamples, numClasses);
+    //pktmat testTargetMat(numTestSamples, numClasses);
 
-    int numCorrect = 0;
-    fc1.forward(mnistTrainImages);
-    for (int r = 0; r < numTrainSamples; ++r) {
-        trainTargetMat.setElem(r, mnistTrainLabels.getElem(r, 0), UNSIGNED_4BIT_MAX);
-        if (trainTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
-            ++numCorrect;
-        }
-    }
-    std::cout << "Initial training numCorrect," << numCorrect << "\n";
+    // int numCorrect = 0;
+    // fc1.forward(mnistTrainImages);
+    // for (int r = 0; r < numTrainSamples; ++r) {
+    //     trainTargetMat.setElem(r, mnistTrainLabels.getElem(r, 0), UNSIGNED_4BIT_MAX);
+    //     if (trainTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
+    //         ++numCorrect;
+    //     }
+    // }
+    // std::cout << "Initial training numCorrect," << numCorrect << "\n";
 
-    numCorrect = 0;
-    fc1.forward(mnistTestImages);
-    for (int r = 0; r < numTestSamples; ++r) {
-        testTargetMat.setElem(r, mnistTestLabels.getElem(r, 0), UNSIGNED_4BIT_MAX);
-        if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
-            ++numCorrect;
-        }
-    }
-    std::cout << "Initial test numCorrect," << numCorrect << "\n";
+    // numCorrect = 0;
+    // fc1.forward(mnistTestImages);
+    // for (int r = 0; r < numTestSamples; ++r) {
+    //     testTargetMat.setElem(r, mnistTestLabels.getElem(r, 0), UNSIGNED_4BIT_MAX);
+    //     if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
+    //         ++numCorrect;
+    //     }
+    // }
+    // std::cout << "Initial test numCorrect," << numCorrect << "\n";
     std::cout << "----- NOW START -----\n(CSV format)\n";
 
     pktmat lossMat;
     pktmat lossDeltaMat;
-    pktmat batchLossDeltaMat;
+    //pktmat batchLossDeltaMat;
     pktmat miniBatchImages;
     pktmat miniBatchTrainTargets;
 
@@ -119,8 +119,8 @@ int example_fc_int_bp_mnist() {
         indices[i] = i;
     }
 
-    std::string testCorrect = "";
-    std::cout << "Training\nEpoch,SumLoss,NumCorrect,Accuracy\n";
+    // std::string testCorrect = "";
+    // std::cout << "Training\nEpoch,SumLoss,NumCorrect,Accuracy\n";
 
     for (int e = 0; e < numEpochs; e++) {
         // Shuffle the indices
@@ -154,6 +154,8 @@ int example_fc_int_bp_mnist() {
             //std::cout << "For miniBatchTrainTargets, indices:" << indices << "idxStart:" << idxStart << "idxEnd:" << idxEnd << "\n";        
 
             fc1.forward(miniBatchImages);
+            fc2.forward(fc1);
+            fcLast.forward(fc2);
             sumLoss += pktloss::batchL2Loss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only
             //std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
@@ -175,44 +177,44 @@ int example_fc_int_bp_mnist() {
         }
         std::cout << e << "," << sumLoss << "," << epochNumCorrect << "," << (epochNumCorrect * 1.0 / numTrainSamples) << "\n";
 
-        // check the test set accuracy
-        fc1.forward(mnistTestImages);
-        int testNumCorrect = 0;
-        for (int r = 0; r < numTestSamples; ++r) {
-            if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
-                ++testNumCorrect;
-                //For debug only
-                //std::cout << "testNumCorrect = " << testNumCorrect << "\n";
-            }
-        }
-        testCorrect += (std::to_string(e) + "," + std::to_string(testNumCorrect) + "\n");
+        // // check the test set accuracy
+        // fc1.forward(mnistTestImages);
+        // int testNumCorrect = 0;
+        // for (int r = 0; r < numTestSamples; ++r) {
+        //     if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
+        //         ++testNumCorrect;
+        //         //For debug only
+        //         //std::cout << "testNumCorrect = " << testNumCorrect << "\n";
+        //     }
+        // }
+        // testCorrect += (std::to_string(e) + "," + std::to_string(testNumCorrect) + "\n");
     }
 
-    fc1.forward(mnistTrainImages);
-    numCorrect = 0;
-    for (int r = 0; r < numTrainSamples; ++r) {
-        if (trainTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
-            ++numCorrect;
-            //For debug only
-            //std::cout << "For mnist train image, numCorrect = " << numCorrect << "\n";
-        }
-    }
-    std::cout << "Final training numCorrect," << numCorrect << "\n";
+    // fc1.forward(mnistTrainImages);
+    // numCorrect = 0;
+    // for (int r = 0; r < numTrainSamples; ++r) {
+    //     if (trainTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
+    //         ++numCorrect;
+    //         //For debug only
+    //         //std::cout << "For mnist train image, numCorrect = " << numCorrect << "\n";
+    //     }
+    // }
+    // std::cout << "Final training numCorrect," << numCorrect << "\n";
 
-    fc1.forward(mnistTestImages);
-    numCorrect = 0;
-    for (int r = 0; r < numTestSamples; ++r) {
-        if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
-            ++numCorrect;
-            //For debug only
-            //std::cout << "For mnist test image, numCorrect = " << numCorrect << "\n";
-        }
-    }
-    std::cout << "\nTest\nEpoch,NumCorrect\n";
-    std::cout << testCorrect;
-    std::cout << "Final test numCorrect," << numCorrect << "\n";
-    std::cout << "Final test accuracy," << (numCorrect * 1.0 / numTestSamples) << "\n";
-    std::cout << "Final learning rate inverse," << lrInv << "\n";
+    // fc1.forward(mnistTestImages);
+    // numCorrect = 0;
+    // for (int r = 0; r < numTestSamples; ++r) {
+    //     if (testTargetMat.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
+    //         ++numCorrect;
+    //         //For debug only
+    //         //std::cout << "For mnist test image, numCorrect = " << numCorrect << "\n";
+    //     }
+    // }
+    // std::cout << "\nTest\nEpoch,NumCorrect\n";
+    // std::cout << testCorrect;
+    // std::cout << "Final test numCorrect," << numCorrect << "\n";
+    // std::cout << "Final test accuracy," << (numCorrect * 1.0 / numTestSamples) << "\n";
+    // std::cout << "Final learning rate inverse," << lrInv << "\n";
 
     delete[] indices;
 

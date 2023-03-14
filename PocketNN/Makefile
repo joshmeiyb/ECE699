@@ -38,7 +38,7 @@ pktnn_mat3d.o: pktnn_mat3d.cpp pktnn_mat3d.h
 	$(CXX) $(CXXFLAGS) -c pktnn_mat3d.cpp
 
 clean:
-	rm *.o output 
+	rm *.o output output.txt
 
 
 

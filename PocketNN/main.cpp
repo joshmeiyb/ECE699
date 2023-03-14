@@ -28,7 +28,7 @@ int main() {
 
     // example_fc_int_dfa_mnist();
 
-    // example_fc_int_bp_very_simple();
+    //example_fc_int_bp_very_simple();
     example_fc_int_bp_mnist();
 
     return 0;
