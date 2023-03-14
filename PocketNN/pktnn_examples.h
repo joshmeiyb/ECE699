@@ -12,6 +12,7 @@
 #include "pktnn_loader.h"
 
 int example_fc_int_bp_very_simple();
+int example_fc_int_bp_mnist();
 int example_fc_int_dfa_mnist();
 int example_fc_int_dfa_fashion_mnist();
 
