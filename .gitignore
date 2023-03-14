@@ -3,3 +3,9 @@
 
 #ignore output file
 output
+
+#ignore nfs file
+*.nfs*
+
+#ignore vscode folder
+.vscode
