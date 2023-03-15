@@ -42,5 +42,7 @@ You can comment out the current function and call the new function in the `main.
     fc2.useDfa(false).initHeWeightBias().setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
     fcLast.useDfa(false).setActv(b).setPrevLayer(fc2);
     ```
+## Reference
+1. Neural Networks and Deep Learning - Michael Nielsen http://neuralnetworksanddeeplearning.com/
 
 ## To be continued...
