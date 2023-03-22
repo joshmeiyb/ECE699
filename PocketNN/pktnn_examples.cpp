@@ -63,16 +63,17 @@ int example_fc_int_bp_mnist() {
     const int dimInput = mnistRows * mnistCols;
     const int dim1 = 100;
     const int dim2 = 50;
-    pktactv::Actv a = pktactv::Actv::pocket_tanh;
-    pktactv::Actv b = pktactv::Actv::as_is;
+    pktactv::Actv a = pktactv::Actv::pocket_sigmoid;
+    pktactv::Actv b = pktactv::Actv::pocket_softmax;
+    pktactv::Actv c = pktactv::Actv::as_is;
 
     pktfc fc1(dimInput, dim1);
     pktfc fc2(dim1, dim2);
     pktfc fcLast(dim2, numClasses);
     //Modified the fc layers to do BP training
     fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
-    fc2.useDfa(false).initHeWeightBias().setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
-    fcLast.useDfa(false).setActv(b).setPrevLayer(fc2);
+    fc2.useDfa(false).initHeWeightBias().setActv(b).setPrevLayer(fc1).setNextLayer(fcLast);
+    fcLast.useDfa(false).setActv(c).setPrevLayer(fc2);
 
     // initialization
     pktmat trainTargetMat(numTrainSamples, numClasses);
@@ -105,9 +106,9 @@ int example_fc_int_bp_mnist() {
     pktmat miniBatchImages;
     pktmat miniBatchTrainTargets;
 
-    int numEpochs = 3;
+    int numEpochs = 30;
     int miniBatchSize = 20; // CAUTION: Too big minibatch size can cause overflow
-    int lrInv = 1000;
+    int lrInv = 100;        // Learning Rate
 
     std::cout << "Learning Rate Inverse," << lrInv <<
         ",numTrainSamples," << numTrainSamples <<
