@@ -1,4 +1,5 @@
 #include "pktnn_examples.h"
+#include "pktnn_fc.h"
 
 using namespace pktnn;
 
@@ -70,10 +71,25 @@ int example_fc_int_bp_mnist() {
     pktfc fc1(dimInput, dim1);
     pktfc fc2(dim1, dim2);
     pktfc fcLast(dim2, numClasses);
-    //Modified the fc layers to do BP training
-    fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
+    // Modified the fc layers to do BP training
+    // Use BP for training, set useDfa(false)
+    fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         
     fc2.useDfa(false).initHeWeightBias().setActv(b).setPrevLayer(fc1).setNextLayer(fcLast);
-    fcLast.useDfa(false).setActv(c).setPrevLayer(fc2);
+    fcLast.useDfa(false).initHeWeightBias().setActv(c).setPrevLayer(fc2);
+    
+    // std::cout << "\nfc1 weight:";
+    // fc1.printWeight();
+    // std::cout << "\nfc1 bias:";
+    // fc1.printBias();
+    // std::cout << "\nfc2 weight:";
+    // fc2.printWeight();
+    // std::cout << "\nfc2 bias:";
+    // fc2.printBias();
+    // std::cout << "\nfcLast weight:";
+    // fcLast.printWeight();
+    // std::cout << "\nfcLast bias:";
+    // fcLast.printBias();
+
 
     // initialization
     pktmat trainTargetMat(numTrainSamples, numClasses);
@@ -107,8 +123,8 @@ int example_fc_int_bp_mnist() {
     pktmat miniBatchTrainTargets;
 
     int numEpochs = 30;
-    int miniBatchSize = 20; // CAUTION: Too big minibatch size can cause overflow
-    int lrInv = 100;        // Learning Rate
+    int miniBatchSize = 5; // CAUTION: Too big minibatch size can cause overflow
+    int lrInv = 10;        // Learning Rate
 
     std::cout << "Learning Rate Inverse," << lrInv <<
         ",numTrainSamples," << numTrainSamples <<
@@ -173,6 +189,7 @@ int example_fc_int_bp_mnist() {
                     // std::cout << "batchNumCorrect = " << batchNumCorrect << "\n";
                 }
             }
+            //lossDeltaMat.resetZero(1, 1).setElem(0, 0, sumLossDelta);
             fcLast.backward(lossDeltaMat, lrInv);       //Training
             epochNumCorrect += batchNumCorrect;
             //For debug only
@@ -191,6 +208,19 @@ int example_fc_int_bp_mnist() {
             }
         }
         testCorrect += (std::to_string(e) + "," + std::to_string(testNumCorrect) + "\n");
+
+        // std::cout << "\nfc1 weight:";
+        // fc1.printWeight();
+        // std::cout << "\nfc1 bias:";
+        // fc1.printBias();
+        // std::cout << "\nfc2 weight:";
+        // fc2.printWeight();
+        // std::cout << "\nfc2 bias:";
+        // fc2.printBias();
+        // std::cout << "\nfcLast weight:";
+        // fcLast.printWeight();
+        // std::cout << "\nfcLast bias:";
+        // fcLast.printBias();
     }
 
     fc1.forward(mnistTrainImages);

@@ -90,7 +90,24 @@ pktfc& pktnn::pktfc::initHeWeightBias() {
         // TODO
         break;
     case pktactv::Actv::pocket_sigmoid:
-        range = 0;
+        range = 1;
+        std::cout << "He: " << range << "\n";
+        mWeight.setRandom(false, -range, range);
+        mBias.setRandom(false, -range, range);
+        // TODO
+        break;
+    case pktactv::Actv::pocket_softmax:
+        range = 1;
+        std::cout << "He: " << range << "\n";
+        mWeight.setRandom(false, -range, range);
+        mBias.setRandom(false, -range, range);
+        // TODO
+        break;
+    case pktactv::Actv::as_is:
+        range = 1;
+        std::cout << "He: " << range << "\n";
+        mWeight.setRandom(false, -range, range);
+        mBias.setAllConstant(0);
         // TODO
         break;
     default:
