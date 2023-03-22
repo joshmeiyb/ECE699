@@ -67,15 +67,16 @@ int example_fc_int_bp_mnist() {
     pktactv::Actv a = pktactv::Actv::pocket_sigmoid;
     pktactv::Actv b = pktactv::Actv::pocket_softmax;
     pktactv::Actv c = pktactv::Actv::as_is;
+    pktactv::Actv d = pktactv::Actv::pocket_tanh;
 
     pktfc fc1(dimInput, dim1);
     pktfc fc2(dim1, dim2);
     pktfc fcLast(dim2, numClasses);
     // Modified the fc layers to do BP training
     // Use BP for training, set useDfa(false)
-    fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         
-    fc2.useDfa(false).initHeWeightBias().setActv(b).setPrevLayer(fc1).setNextLayer(fcLast);
-    fcLast.useDfa(false).initHeWeightBias().setActv(c).setPrevLayer(fc2);
+    fc1.useDfa(false).initHeWeightBias().setActv(d).setNextLayer(fc2);         
+    fc2.useDfa(false).initHeWeightBias().setActv(d).setPrevLayer(fc1).setNextLayer(fcLast);
+    fcLast.useDfa(false).initHeWeightBias().setActv(d).setPrevLayer(fc2);
     
     // std::cout << "\nfc1 weight:";
     // fc1.printWeight();
@@ -123,8 +124,8 @@ int example_fc_int_bp_mnist() {
     pktmat miniBatchTrainTargets;
 
     int numEpochs = 30;
-    int miniBatchSize = 5; // CAUTION: Too big minibatch size can cause overflow
-    int lrInv = 10;        // Learning Rate
+    int miniBatchSize = 20; // CAUTION: Too big minibatch size can cause overflow
+    int lrInv = 1000;        // Learning Rate
 
     std::cout << "Learning Rate Inverse," << lrInv <<
         ",numTrainSamples," << numTrainSamples <<
@@ -171,16 +172,16 @@ int example_fc_int_bp_mnist() {
             //std::cout << "For miniBatchTrainTargets, indices:" << indices << "idxStart:" << idxStart << "idxEnd:" << idxEnd << "\n";        
 
             fc1.forward(miniBatchImages);
-            fc2.forward(fc1);
-            fcLast.forward(fc2);
-            // sumLoss += pktloss::batchL2Loss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
+            // fc2.forward(fc1);
+            // fcLast.forward(fc2);
+            sumLoss += pktloss::batchPocketCrossLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             sumLoss += pktloss::batchCrossEntropyLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only
-            //std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
-            //sumLossDelta = pktloss::batchL2LossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
-            sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
-            //For debug only
-            //std::cout << "sumLossDelta is calculated, sumLossDelta = " << sumLossDelta << "\n";
+            std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
+            sumLossDelta = pktloss::batchPocketCrossLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            //sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            //For debug only, get the gradient of sumLoss
+            std::cout << "sumLossDelta is calculated, sumLossDelta = " << sumLossDelta << "\n";
 
             for (int r = 0; r < miniBatchSize; ++r) {
                 if (miniBatchTrainTargets.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {
