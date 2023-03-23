@@ -72,45 +72,29 @@ pktfc& pktnn::pktfc::setActv(pktactv::Actv actv) {
     return *this;
 }
 
-pktfc& pktnn::pktfc::initHeWeightBias() {
+pktfc& pktnn::pktfc::initWeightBias() {
     int range = 0;
     switch (mActv) {
     case pktactv::Actv::pocket_relu8bit:
-    case pktactv::Actv::pocket_leakyrelu:
-        range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
-        std::cout << "He: " << range << "\n";
+    // For ReLU, use HE Weight Initialization
+    // uniform distribution within the range of +x and -x, where x=(sqrt(6/fan-in))
+    case pktactv::Actv::pocket_leakyrelu:   
+        // range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
+        range = floorSqrt(6 / (mInDim));
+        std::cout << "HE Weight Initialization: " << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
         break;
+    // For tanh activation function, we use Xavier Weight Initialization
+    // uniform distribution with in range of +x and -x, where x=(sqrt(6/(fan-in+fan-out)))
     case pktactv::Actv::pocket_tanh:
-        range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
-        // range = 1;
-        std::cout << "He: " << range << "\n";
+        //range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
+        range = floorSqrt(6 / (mInDim + mOutDim));
+        std::cout << "Xavier Weight Initialization: " << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
-        // TODO
         break;
-    case pktactv::Actv::pocket_sigmoid:
-        range = 1;
-        std::cout << "He: " << range << "\n";
-        mWeight.setRandom(false, -range, range);
-        mBias.setRandom(false, -range, range);
-        // TODO
-        break;
-    case pktactv::Actv::pocket_softmax:
-        range = 1;
-        std::cout << "He: " << range << "\n";
-        mWeight.setRandom(false, -range, range);
-        mBias.setRandom(false, -range, range);
-        // TODO
-        break;
-    case pktactv::Actv::as_is:
-        range = 1;
-        std::cout << "He: " << range << "\n";
-        mWeight.setRandom(false, -range, range);
-        mBias.setAllConstant(0);
-        // TODO
-        break;
+    // TODO: create specific weight initialization for other activation function
     default:
         range = 0;
         break;

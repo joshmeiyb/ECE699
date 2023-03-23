@@ -18,8 +18,8 @@ int example_fc_int_bp_very_simple() {
     mat1.setElem(0, 2, 30);
     mat1.printMat();
 
-    fc1.useDfa(false).initHeWeightBias().setActv(pktactv::Actv::pocket_tanh).setNextLayer(fc2);
-    fc2.useDfa(false).initHeWeightBias().setActv(pktactv::Actv::as_is).setPrevLayer(fc1);
+    fc1.useDfa(false).initWeightBias().setActv(pktactv::Actv::pocket_tanh).setNextLayer(fc2);
+    fc2.useDfa(false).initWeightBias().setActv(pktactv::Actv::as_is).setPrevLayer(fc1);
 
     int y = 551; // random number
 
@@ -55,11 +55,11 @@ int example_fc_int_bp_mnist() {
     pktloader::loadMnistLabels(mnistTestLabels, numTestSamples, false); // numTestSamples x 1
     pktloader::loadMnistImages(mnistTestImages, numTestSamples, false); // numTestSamples x (28*28)
 
-    std::cout << "mnistTrainImages: ";
-    mnistTrainImages.printMat();
+    // std::cout << "mnistTrainImages: ";
+    // mnistTrainImages.printMat();
     // std::cout << "mnistTestImages: " << mnistTestImages.getMat() << "\n";
 
-    std::cout << "\nLoaded train images," << numTrainSamples /*<< ",Loaded test images," << numTestSamples */<< "\n";
+    std::cout << "\nLoaded train images," << numTrainSamples << ",Loaded test images," << numTestSamples << "\n";
 
     int numClasses = 10;
     int mnistRows = 28;
@@ -78,9 +78,9 @@ int example_fc_int_bp_mnist() {
     pktfc fcLast(dim2, numClasses);
     // Modified the fc layers to do BP training
     // Use BP for training, set useDfa(false)
-    fc1.useDfa(false).initHeWeightBias().setActv(d).setNextLayer(fc2);         
-    fc2.useDfa(false).initHeWeightBias().setActv(d).setPrevLayer(fc1).setNextLayer(fcLast);
-    fcLast.useDfa(false).initHeWeightBias().setActv(d).setPrevLayer(fc2);
+    fc1.useDfa(false).initWeightBias().setActv(d).setNextLayer(fc2);         
+    fc2.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc1).setNextLayer(fcLast);
+    fcLast.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc2);
     
     // std::cout << "\nfc1 weight:";
     // fc1.printWeight();

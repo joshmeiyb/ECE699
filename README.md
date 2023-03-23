@@ -38,12 +38,12 @@ You can comment out the current function and call the new function in the `main.
     
     ```
     //Modified the fc layers to do BP training
-    fc1.useDfa(false).initHeWeightBias().setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
-    fc2.useDfa(false).initHeWeightBias().setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
+    fc1.useDfa(false).initWeightBias().setActv(a).setNextLayer(fc2);         //Use BP for training, set useDfa(false)
+    fc2.useDfa(false).initWeightBias().setActv(a).setPrevLayer(fc1).setNextLayer(fcLast);
     fcLast.useDfa(false).setActv(b).setPrevLayer(fc2);
     ```
 ## Reference
 1. Neural Networks and Deep Learning - Michael Nielsen http://neuralnetworksanddeeplearning.com/
-2. Different activation functions and initialization functions https://medium.datadriveninvestor.com/deep-learning-best-practices-activation-functions-weight-initialization-methods-part-1-c235ff976ed#7cf2
+2. Different activation functions and initialization functions https://shahaab-co.com/mag/en-articles/weight-initialization-in-deep-learning/
 
 ## To be continued...

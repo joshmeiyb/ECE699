@@ -72,7 +72,7 @@ namespace pktnn {
         pktfc& setRandomBias();
         pktfc& setRandomDfaWeight(int r, int c);
         pktfc& setActv(pktactv::Actv actv);
-        pktfc& initHeWeightBias();
+        pktfc& initWeightBias();
         pktfc& useBatchNormalization(bool useBn = true);
         pktfc& useDfa(bool useDfa = true);
 
