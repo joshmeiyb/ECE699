@@ -113,6 +113,11 @@ int pktloss::batchCrossEntropyLoss(pktmat& lossMat, pktmat& yMat, pktmat& yHatMa
         int columnLoss = 0;
         for (int c = 0; c < yMat.cols(); ++c) {
             int yHat = yHatMat.getElem(r, c);
+            int yMatElem = yMat.getElem(r, c);
+            std::cout << "row = " << r << "\n";
+            std::cout << "column = " << c << "\n";
+            std::cout << "yHat = " << yHat << "\n";
+            std::cout << "yMatElem = " << yMatElem << "\n";
             if (yMat.getElem(r, c) == 1) {
                 // pocket sigmoid range = [1, 127 (== PKT_MAX)]
                 // as_is range = +- 16 bit range??
@@ -122,9 +127,14 @@ int pktloss::batchCrossEntropyLoss(pktmat& lossMat, pktmat& yMat, pktmat& yHatMa
 
                 //columnLoss -= (/*PKT_MAX **/ intRoundLog(2, minVal(yHat, PKT_MAX), 0, yShift));
                 columnLoss += ((yHat - PKT_MAX) * (yHat - PKT_MAX)) / 2;
+                std::cout << "yMatElem == 1, columnLoss = " << columnLoss << "\n";
             }
             else {
                 //columnLoss += (yHat * yHat) / 2;
+                columnLoss += ((-yMatElem * std::log(yHat)) - ((1-yMatElem) * std::log(1 - yHat)));
+                std::cout << "yMatElem != 1, -yMatElem * log(yHat) = " << (-yMatElem * std::log(yHat)) << "\n";
+                std::cout << "yMatElem != 1, ((1-yMatElem) * log(1 - yHat)) = " << ((1-yMatElem) * std::log(1 - yHat)) << "\n";
+                std::cout << "yMatElem != 1, columnLoss = " << columnLoss << "\n";
             }
         }
         lossMat.setElem(r, 0, columnLoss);

@@ -55,7 +55,11 @@ int example_fc_int_bp_mnist() {
     pktloader::loadMnistLabels(mnistTestLabels, numTestSamples, false); // numTestSamples x 1
     pktloader::loadMnistImages(mnistTestImages, numTestSamples, false); // numTestSamples x (28*28)
 
-    std::cout << "Loaded train images," << numTrainSamples /*<< ",Loaded test images," << numTestSamples */<< "\n";
+    std::cout << "mnistTrainImages: ";
+    mnistTrainImages.printMat();
+    // std::cout << "mnistTestImages: " << mnistTestImages.getMat() << "\n";
+
+    std::cout << "\nLoaded train images," << numTrainSamples /*<< ",Loaded test images," << numTestSamples */<< "\n";
 
     int numClasses = 10;
     int mnistRows = 28;
@@ -172,16 +176,23 @@ int example_fc_int_bp_mnist() {
             //std::cout << "For miniBatchTrainTargets, indices:" << indices << "idxStart:" << idxStart << "idxEnd:" << idxEnd << "\n";        
 
             fc1.forward(miniBatchImages);
+
+            std::cout << "\nfc1 output:";
+            fc1.printOutput();
+            std::cout << "\nfc2 output:";
+            fc2.printOutput();
+            std::cout << "\nfcLast output:";
+            fcLast.printOutput();
             // fc2.forward(fc1);
             // fcLast.forward(fc2);
-            sumLoss += pktloss::batchPocketCrossLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
+            //sumLoss += pktloss::batchPocketCrossLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             sumLoss += pktloss::batchCrossEntropyLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only
-            std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
-            sumLossDelta = pktloss::batchPocketCrossLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
-            //sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            //std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
+            //sumLossDelta = pktloss::batchPocketCrossLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only, get the gradient of sumLoss
-            std::cout << "sumLossDelta is calculated, sumLossDelta = " << sumLossDelta << "\n";
+            //std::cout << "sumLossDelta is calculated, sumLossDelta = " << sumLossDelta << "\n";
 
             for (int r = 0; r < miniBatchSize; ++r) {
                 if (miniBatchTrainTargets.getMaxIndexInRow(r) == fcLast.mOutput.getMaxIndexInRow((r))) {

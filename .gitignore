@@ -3,6 +3,7 @@
 
 #ignore output file
 output
+output.txt
 
 #ignore nfs file
 *.nfs*

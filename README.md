@@ -44,5 +44,6 @@ You can comment out the current function and call the new function in the `main.
     ```
 ## Reference
 1. Neural Networks and Deep Learning - Michael Nielsen http://neuralnetworksanddeeplearning.com/
+2. Different activation functions and initialization functions https://medium.datadriveninvestor.com/deep-learning-best-practices-activation-functions-weight-initialization-methods-part-1-c235ff976ed#7cf2
 
 ## To be continued...

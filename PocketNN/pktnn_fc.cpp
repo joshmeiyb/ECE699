@@ -84,6 +84,7 @@ pktfc& pktnn::pktfc::initHeWeightBias() {
         break;
     case pktactv::Actv::pocket_tanh:
         range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
+        // range = 1;
         std::cout << "He: " << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
