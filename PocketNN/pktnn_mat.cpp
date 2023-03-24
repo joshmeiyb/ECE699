@@ -174,23 +174,23 @@ pktmat& pktnn::pktmat::normalizeColwise(int newMin, int newMax) {
 }
 
 pktmat& pktnn::pktmat::normalizeMinMax(int newMin, int newMax) {
-    int min = PKT_MAX;
-    int max = PKT_MIN;
+    //int min = PKT_MAX;
+    //int max = PKT_MIN;
     for (int r = 0; r < mRows; ++r) {
         for (int c = 0; c < mCols; ++c) {
             int thisVal = mMat[r][c];
-            if (thisVal < min) {
-                min = thisVal;
+            if (thisVal < newMin) {
+                newMin = thisVal;
             }
-            if (thisVal > max) {
-                max = thisVal;
+            if (thisVal > newMax) {
+                newMax = thisVal;
             }
         }
     }
 
     for (int r = 0; r < mRows; ++r) {
         for (int c = 0; c < mCols; ++c) {
-            mMat[r][c] = (mMat[r][c] - min) / (max - min);
+            mMat[r][c] = (mMat[r][c] - newMin) / (newMax - newMin);
         }
     }
 

@@ -79,8 +79,10 @@ int example_fc_int_bp_mnist() {
     // Modified the fc layers to do BP training
     // Use BP for training, set useDfa(false)
     fc1.useDfa(false).initWeightBias().setActv(d).setNextLayer(fc2);         
-    fc2.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc1).setNextLayer(fcLast);
-    fcLast.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc2);
+    // fc2.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc1).setNextLayer(fcLast);
+    fc2.useDfa(false).initWeightBias().setActv(d).setNextLayer(fcLast);
+    // fcLast.useDfa(false).initWeightBias().setActv(d).setPrevLayer(fc2);
+    fcLast.useDfa(false).initWeightBias().setActv(d);
     
     // std::cout << "\nfc1 weight:";
     // fc1.printWeight();
@@ -185,12 +187,12 @@ int example_fc_int_bp_mnist() {
             fcLast.printOutput();
             // fc2.forward(fc1);
             // fcLast.forward(fc2);
-            //sumLoss += pktloss::batchPocketCrossLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
-            sumLoss += pktloss::batchCrossEntropyLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
+            sumLoss += pktloss::batchPocketCrossLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
+            // sumLoss += pktloss::batchCrossEntropyLoss(lossMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only
             //std::cout << "sumLoss increases, sumLoss = " << sumLoss << "\n"; 
-            //sumLossDelta = pktloss::batchPocketCrossLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
-            sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            sumLossDelta = pktloss::batchPocketCrossLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
+            // sumLossDelta = pktloss::batchCrossEntropyLossDelta(lossDeltaMat, miniBatchTrainTargets, fcLast.mOutput);
             //For debug only, get the gradient of sumLoss
             //std::cout << "sumLossDelta is calculated, sumLossDelta = " << sumLossDelta << "\n";
 
