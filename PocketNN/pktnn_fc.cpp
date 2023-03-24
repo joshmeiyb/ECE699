@@ -81,6 +81,7 @@ pktfc& pktnn::pktfc::initWeightBias() {
     case pktactv::Actv::pocket_leakyrelu:   
         // range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
         range = floorSqrt(6 / (mInDim));
+        std::cout << "mInDim: " << mInDim << "\n";
         std::cout << "HE Weight Initialization: " << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
@@ -88,8 +89,11 @@ pktfc& pktnn::pktfc::initWeightBias() {
     // For tanh activation function, we use Xavier Weight Initialization
     // uniform distribution with in range of +x and -x, where x=(sqrt(6/(fan-in+fan-out)))
     case pktactv::Actv::pocket_tanh:
-        //range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
-        range = floorSqrt(6 / (mInDim + mOutDim));
+        // range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
+        // range = std::sqrt(6 / (mInDim + mOutDim));
+        range = 1;
+        std::cout << "mInDim: " << mInDim << "\n";
+        std::cout << "mInDim: " << mOutDim << "\n";
         std::cout << "Xavier Weight Initialization: " << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
