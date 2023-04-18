@@ -168,13 +168,16 @@ void pktactv::pocketTanh(pktmat& matOut, pktmat& matIn, pktmat& matActvGradInv, 
     const int yMax = PKT_MAX;
     const int yMin = PKT_MIN;
     const int joints[6] = { -127, -74, -31, 32, 75, 128 };
-    const int divisor = (1 << k) * numItems; //TODO! * numItems works better.
+    const int divisor = (1 << k/8) * numItems; //TODO! * numItems works better.
+    // std::cout << "\nDEBUG: In pocketTanh, divisor: " << divisor << "\n";
     const int slopesInv[7] = { PKT_MAX, 8, 2, 1, 2, 8, PKT_MAX }; // Strictly, they should be PKT_MAX, 4, 1, 0.5, 1, 4, PKT_MAX
     //const int slopesInv[7] = {PKT_MAX * numItems, 8 * numItems, 2 * numItems, 1 * numItems, 2 * numItems, 8 * numItems, PKT_MAX * numItems };
 
     for (int r = 0; r < matOut.rows(); ++r) {
         for (int c = 0; c < matOut.cols(); ++c) {
             int x = matIn.getElem(r, c) / divisor;
+            // std::cout << "\nDEBUG: In pocketTanh, matIn.getElem(r, c): " << matIn.getElem(r, c) << "\n";
+            // std::cout << "\nDEBUG: In pocketTanh, x: " << x << "\n";
             if (x < joints[0]) {
                 matOut.setElem(r, c, yMin);
                 matActvGradInv.setElem(r, c, slopesInv[0]);
@@ -210,6 +213,13 @@ void pktactv::pocketTanh(pktmat& matOut, pktmat& matIn, pktmat& matActvGradInv, 
             }
         }
     }
+    // std::cout << "\nDEBUG: In pocketTanh, yMax: " << yMax << ", in pocketTanh, yMin: " << yMin << "\n";
+    // std::cout << "\nDEBUG: In pocketTanh, k: " << k << "\n";
+
+    // std::cout << "\nDEBUG: In pocketTanh, Input of activation function: ";
+    // matIn.printMat();
+    // std::cout << "\nDEBUG: In pocketTanh, Output of activation function: ";
+    // matOut.printMat();
 }
 
 void pktnn::pktactv::rescale(pktmat& matOut, pktmat& matIn, pktmat& matActvGradInv, int k) {
@@ -382,4 +392,8 @@ void pktactv::asIs(pktmat& matOut, pktmat& matIn, pktmat& matActvGradInv, int k)
             matOut.setElem(r, c, matIn.getElem(r, c));
         }
     }
+    // std::cout << "\nDEBUG: Input of asIs activation: ";
+    // matIn.printMat();
+    // std::cout << "\nDEBUG: Output of asIs activation: ";
+    // matOut.printMat();
 }

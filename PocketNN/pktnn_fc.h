@@ -86,6 +86,7 @@ namespace pktnn {
         pktfc& printBias(std::ostream& outTo = std::cout);
         pktfc& printInter(std::ostream& outTo = std::cout);
         pktfc& printOutput(std::ostream& outTo = std::cout);
+        // pktfc& printInput(std::ostream& outTo = std::cout);
     };
 }
 #endif

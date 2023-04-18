@@ -60,7 +60,7 @@ pktfc& pktfc::setRandomBias() {
 pktfc& pktnn::pktfc::setRandomDfaWeight(int r, int c) {
     // Using He initialization at this time.
     // Maybe other randomization can work better.
-    std::cout << "Initialized DFA!\n";
+    std::cout << "Initialized Dfa weight\n";
     mDfaWeight.resetZero(r, c);
     int range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
     mDfaWeight.setRandom(false, -range, range);
@@ -79,23 +79,25 @@ pktfc& pktnn::pktfc::initWeightBias() {
     // For ReLU, use HE Weight Initialization
     // uniform distribution within the range of +x and -x, where x=(sqrt(6/fan-in))
     case pktactv::Actv::pocket_leakyrelu:   
-        // range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
-        range = floorSqrt(6 / (mInDim));
-        std::cout << "mInDim: " << mInDim << "\n";
-        std::cout << "HE Weight Initialization: " << range << "\n";
+        range = floorSqrt((12 * SHRT_MAX) / (mInDim));
+        // range = floorSqrt(6 / (mInDim));
+        // std::cout << "mInDim: " << mInDim << "\n";
+        std::cout << "HE Weight Initialization is done, the range is:" << range << "\n";
         mWeight.setRandom(false, -range, range);
         mBias.setRandom(false, -range, range);
         break;
     // For tanh activation function, we use Xavier Weight Initialization
     // uniform distribution with in range of +x and -x, where x=(sqrt(6/(fan-in+fan-out)))
     case pktactv::Actv::pocket_tanh:
-        // range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
+        range = floorSqrt((12 * SHRT_MAX) / (mInDim + mOutDim));
         // range = std::sqrt(6 / (mInDim + mOutDim));
-        range = 1;
-        std::cout << "mInDim: " << mInDim << "\n";
-        std::cout << "mInDim: " << mOutDim << "\n";
-        std::cout << "Xavier Weight Initialization: " << range << "\n";
+        // range = 10;
+        // std::cout << "mInDim: " << mInDim << "\n";
+        // std::cout << "mInDim: " << mOutDim << "\n";
+        std::cout << "Xavier Weight Initialization is done, the range is:" << range << "\n";
         mWeight.setRandom(false, -range, range);
+        // std::cout << "DEBUG: weight is initialized: \n";
+        // mWeight.printMat();
         mBias.setRandom(false, -range, range);
         break;
     // TODO: create specific weight initialization for other activation function
@@ -126,18 +128,22 @@ pktfc& pktfc::forward(pktmat& xMat) {
     if (mUseBn) {
         batchNormalization();
         pktactv::activate(mOutput, mBatchNormalized, mActvGradInv, mActv, K_BIT, mInDim); // TODO: mInDim needed?
+        // std::cout << "DEBUG, forward is executed when mUseBn == 1 \n";
     }
     else {
         mInter.selfAddMat(mBias); // (N, Dk)
         pktactv::activate(mOutput, mInter, mActvGradInv, mActv, K_BIT, mInDim); // TODO: mInDim needed?
+        // std::cout << "DEBUG, forward is executed when mUseBn != 1 \n";
     }
     
     if (pNextLayer != nullptr) {
         if (pNextLayer->getLayerType() == LayerType::pocket_fc) {
             (static_cast<pktfc*>(pNextLayer))->forward(*this);
+            // std::cout << "DEBUG, forward is executed when pNextLayer->getLayerType() == LayerType::pocket_fc \n";
         }
         else {
             // TODO: in what situation can this line be reached?
+            std::cout << "ERROR, forward is not executed correctly\n";
         }
         
     }
@@ -393,3 +399,9 @@ pktfc& pktnn::pktfc::printOutput(std::ostream& outTo) {
     mOutput.printMat(outTo);
     return *this;
 }
+
+// pktfc& pktnn::pktfc::printInput(std::ostream& outTo) {
+//     outTo << "Input: \n";
+//     *mInput.printMat(outTo);
+//     return *this;
+// }
